@@ -46,6 +46,7 @@ public class S3DynamoDBLogStore extends BaseS3DynamoDBLogStore {
     /**
      * Configuration keys for the DynamoDB client.
      */
+    public static final String DYNAMO_DB_CONF_PREFIX = "S3DynamoDBLogStore";
     public static final String DDB_CLIENT_REGION = "ddb.region";
     public static final String DDB_CREATE_TABLE_RCU = "provisionedThroughput.rcu";
     public static final String DDB_CREATE_TABLE_WCU = "provisionedThroughput.wcu";
@@ -64,7 +65,6 @@ public class S3DynamoDBLogStore extends BaseS3DynamoDBLogStore {
     }
 
     @Override
-
     protected AmazonDynamoDB getClient() throws java.io.IOException {
         try {
             return AmazonDynamoDBClientBuilder.standard()
@@ -82,4 +82,10 @@ public class S3DynamoDBLogStore extends BaseS3DynamoDBLogStore {
         final long wcu = Long.parseLong(getParam(hadoopConf, DDB_CREATE_TABLE_WCU, "5"));
         return new ProvisionedThroughput(rcu,wcu);
     }
+
+    @Override
+    protected String getConfPrefix() {
+        return DYNAMO_DB_CONF_PREFIX;
+    }
+
 }

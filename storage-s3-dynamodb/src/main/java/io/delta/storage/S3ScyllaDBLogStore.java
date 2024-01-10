@@ -46,6 +46,7 @@ public class S3ScyllaDBLogStore extends BaseS3DynamoDBLogStore {
     /**
      * Configuration keys for the ScyllaDB client.
      */
+    public static final String SCYLLA_DB_CONF_PREFIX = "S3ScyllaDBLogStore";
     public static final String DDB_CLIENT_ENDPOINT = "ddb.endpoint";
 
 
@@ -61,6 +62,7 @@ public class S3ScyllaDBLogStore extends BaseS3DynamoDBLogStore {
         initClient(hadoopConf);
     }
 
+    @Override
     protected AmazonDynamoDB getClient() throws IOException {
         try {
             return AmazonDynamoDBClientBuilder.standard().withCredentials(getAwsCredentialsProvider())
@@ -76,6 +78,11 @@ public class S3ScyllaDBLogStore extends BaseS3DynamoDBLogStore {
         //ScyllaDD ignores the ProvisionedThroughput setting,  yet we still require it for table creation through the DynamoDB API
         //see: https://opensource.docs.scylladb.com/stable/alternator/compatibility.html#provisioning
         return new ProvisionedThroughput();
+    }
+
+    @Override
+    protected String getConfPrefix() {
+        return SCYLLA_DB_CONF_PREFIX;
     }
 
 }

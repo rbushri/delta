@@ -53,13 +53,13 @@ public abstract class BaseS3DynamoDBLogStore extends BaseExternalLogStore {
     /**
      * Configuration keys for the DynamoDB client.
      *
-     * Keys are either of the form $SPARK_CONF_PREFIX.$CONF or $BASE_CONF_PREFIX.$CONF,
+     * Keys are either of the form $SPARK_CONF_PREFIX.{@link #getConfPrefix()}.$CONF or $BASE_CONF_PREFIX.{@link #getConfPrefix()}.$CONF,
      * e.g. spark.io.delta.storage.S3DynamoDBLogStore.ddb.tableName
      * or io.delta.storage.S3DynamoDBLogStore.ddb.tableName
      */
 
-    public static final String SPARK_CONF_PREFIX = "spark.io.delta.storage.S3DynamoDBLogStore";
-    public static final String BASE_CONF_PREFIX = "io.delta.storage.S3DynamoDBLogStore";
+    public static final String SPARK_CONF_PREFIX = "spark.io.delta.storage";
+    public static final String BASE_CONF_PREFIX = "io.delta.storage";
     public static final String READ_RETRIES = "read.retries";
     public static final String DDB_CLIENT_TABLE = "ddb.tableName";
     public static final String DDB_CLIENT_CREDENTIALS_PROVIDER = "credentials.provider";
@@ -303,9 +303,9 @@ public abstract class BaseS3DynamoDBLogStore extends BaseExternalLogStore {
      * <p>
      * If no parameters exist, then the $defaultValue is returned.
      */
-    protected  static String getParam(Configuration hadoopConf, String name, String defaultValue) {
-        final String sparkPrefixKey = String.format("%s.%s", SPARK_CONF_PREFIX, name);
-        final String basePrefixKey = String.format("%s.%s", BASE_CONF_PREFIX, name);
+    protected static String getParam(Configuration hadoopConf, String name, String defaultValue, String confPrefix) {
+        final String sparkPrefixKey = String.format("%s.%s.%s", SPARK_CONF_PREFIX, confPrefix, name);
+        final String basePrefixKey = String.format("%s.%s.%s", BASE_CONF_PREFIX, confPrefix, name);
 
         final String sparkPrefixVal = hadoopConf.get(sparkPrefixKey);
         final String basePrefixVal = hadoopConf.get(basePrefixKey);
@@ -327,10 +327,17 @@ public abstract class BaseS3DynamoDBLogStore extends BaseExternalLogStore {
         return defaultValue;
     }
 
+    protected  String getParam(Configuration hadoopConf, String name, String defaultValue) {
+        return getParam(hadoopConf, name, defaultValue, getConfPrefix());
+    }
+
     protected  AWSCredentialsProvider getAwsCredentialsProvider() throws ReflectiveOperationException{
         return ReflectionUtils.createAwsCredentialsProvider(credentialsProviderName, initHadoopConf());
     }
 
     protected abstract AmazonDynamoDB getClient() throws java.io.IOException;
     protected abstract ProvisionedThroughput getProvisionedThroughput(Configuration hadoopConf);
+    protected abstract String getConfPrefix();
+
+
 }
