@@ -272,7 +272,7 @@ class ExternalLogStoreSuite extends org.apache.spark.sql.delta.PublicLogStoreSui
 
 class S3DynamoDBLogStoreSuite extends AnyFunSuite {
   test("getParam") {
-    import S3DynamoDBLogStore._
+    import BaseS3DynamoDBLogStore._
 
     val sparkPrefixKey = "spark.io.delta.storage.S3DynamoDBLogStore.ddb.tableName"
     val basePrefixKey = "io.delta.storage.S3DynamoDBLogStore.ddb.tableName"
